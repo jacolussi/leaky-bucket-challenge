@@ -39,4 +39,4 @@ const registerUserIpOnDatabase = async (userIpAddress) => {
     return { message: 'IP already registered.' }
 }
 
-export default registerUserIpOnDatabase;
+export default { registerUserIpOnDatabase, ipAddressModel};
