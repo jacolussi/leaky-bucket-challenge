@@ -1,9 +1,9 @@
 import express from "express";
-import mongoose, { mongo, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import dotenv from "dotenv";
 dotenv.config()
+import ipAdressRouter from "./routes/ipAddressRoute.js"
 
-import registerIP from './controllers/ipAddressController.js';
 const userSchema = new Schema({
     name: {
         type: String,
@@ -32,7 +32,7 @@ const connectDB = async () => {
 connectDB()
 const server = express();
 server.use(express.json());
-server.get('/', async (req, res) => { registerIP(req, res) })
+server.use("/", ipAdressRouter)
 
 server.listen(3333, () => {
     console.log("Server running on 3333 port")
