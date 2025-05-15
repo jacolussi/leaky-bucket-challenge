@@ -1,11 +1,11 @@
-import createUser from "../models/userModel.js"
+import { createUser } from "../models/userModel.js"
 
-const createUserOnDb = async (name, email) => {
-    if(name !== "" && email !== "") {
+export const createUserOnDb = async (name, email) => {
+    try {
         const newUser = await createUser(name,email)
-
         return newUser;
+    } catch (error) {
+        console.error("ERRO AQUI, CABEÇA DE PURUNGO", error);
+        throw error;
     }
 }
-
-export default createUserOnDb;

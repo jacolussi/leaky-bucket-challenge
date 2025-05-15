@@ -18,10 +18,14 @@ const userExists = async (email) => {
         email: email
     });
 
-    return user ? true : false;
+    if(user !== null) {
+        return true;
+    }
+
+    return false;
 }
 
-const createUser = async (name, email) => {
+export const createUser = async (name, email) => {
     const user = await userExists(email);
 
     if(!user) {
@@ -32,10 +36,8 @@ const createUser = async (name, email) => {
 
         await newUser.save();
 
-        return { success: "User successfully created" }
+        return { success: true, message: newUser }
     }
 
-    return { message: "User already have an account" }
+    return { success: false, message: "User already have an account" }
 }
-
-export default createUser;
