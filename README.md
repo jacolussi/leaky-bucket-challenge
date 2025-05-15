@@ -35,9 +35,74 @@ The system uses MongoDB for persistence, storing IP addresses and their availabl
 
 ## Running the Project
 
-1. Clone the repo and checkout the branch:
+1. Clone the repo:
 
 ```bash
 git clone https://github.com/jacolussi/leaky-bucket-challenge.git
 cd leaky-bucket-challenge
-git checkout fix/refactor
+```
+
+2. Install dependecies
+
+```
+npm install
+```
+
+3. Set up your .env file with the MongoDB connection string and any other variables needed. Example:
+
+```
+MONGODB_URI=mongodb://localhost:27017/yourdb
+```
+Or point to a Cluster
+
+4. Run the app.
+
+```
+npm run dev
+```
+
+5. Register IP Address
+
+- **Endpoint:**  
+  `GET /`
+
+- **Description:**  
+  Registers the caller's IP address in the system with a default number of tokens.
+
+- **Request:**  
+  No request body is needed. The server detects the IP from the request headers.
+
+- **Possible Responses:**  
+  - `201 Created` — IP registered successfully  
+  - `409 Conflict` — IP already registered
+
+- **Testing with curl:**  
+  Run this command in your terminal:
+
+  ```bash
+  curl -X http://localhost:3000/
+  ```
+
+6. Register User
+
+- **Endpoint:**  
+  `POST /users`
+
+  - **Description:**  
+  Creates a user on MongoDB with a default number of tokens.(10)
+  When the API response = "You must provide the fields to create an user", 1 token will be removed.
+  If you have 0 tokens, the API response will be: "You do not have enough tokens"
+
+  - **Request:**  
+  A body with as JSON containing name and email file.
+
+  - **Possible Responses:**  
+  - `201 Created` — User registered successfully  
+  - `409 Conflict` — You must provide the fields to create an user
+
+  - **Testing with curl:**  
+  Run this command in your terminal:
+
+  ```bash
+  curl -X POST http://localhost:3000/users
+  ```
