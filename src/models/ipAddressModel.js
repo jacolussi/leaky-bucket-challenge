@@ -4,7 +4,7 @@ const ipSchema = new Schema({
     ipAddress: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     token: {
         type: Number,
@@ -13,30 +13,32 @@ const ipSchema = new Schema({
     }
 });
 
-const ipAddressModel = mongoose.model('ip', ipSchema)
+export const ipAddressModel = mongoose.model('ip', ipSchema)
 
 const isIpRegistered = async (ip) => {
     const userIpAddress = await ipAddressModel.findOne({
         ipAddress: ip
     });
 
-    return userIpAddress ? true : false
+    if(userIpAddress !== null) {
+        return true;
+    }
+
+    return false;
 }
 
-const registerUserIpOnDatabase = async (userIpAddress) => {
+export const registerUserIpOnDatabase = async (userIpAddress) => {
     const isUserRegistered = await isIpRegistered(userIpAddress);
 
-    if(!isUserRegistered) {
+    if(isUserRegistered === false) {
         const newIp = new ipAddressModel({
             ipAddress: userIpAddress
         });
 
         await newIp.save();
 
-        return { success: 'IP registered successfully.' }
+        return { success: true, newIp: newIp }
     }
 
-    return { message: 'IP already registered.' }
+    return { success: false, message: 'IP already registered.' }
 }
-
-export default { registerUserIpOnDatabase, ipAddressModel};

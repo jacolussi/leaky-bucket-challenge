@@ -1,11 +1,11 @@
 import createUser from "../services/userService.js";
-import ipAddresModel from "../models/ipAddresModel.js";
+import { ipAddressModel } from "../models/ipAddressModel.js";
 
 const registerUser = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
     try {
-        const ipExists = await ipAddresModel.findOne({
+        const ipExists = await ipAddressModel.findOne({
             ipAddress: ipAddress
         });
 

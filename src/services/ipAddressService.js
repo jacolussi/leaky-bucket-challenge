@@ -1,10 +1,12 @@
-import registerUserIpOnDatabase from '../models/ipAddresModel.js';
+import { registerUserIpOnDatabase } from '../models/ipAddressModel.js';
 
 const ipAddressService = async (ip) => {
-    if(ip !== "") {
+    try {
         const ipAddress = await registerUserIpOnDatabase(ip);
-
-        return ipAddress.success
+        return ipAddress;
+    } catch (error) {
+        console.error("ERRO AQUI NESSA MERDA", error);
+        throw error;
     }
 };
 

@@ -7,11 +7,13 @@ const registerIP = async (req, res) => {
         const ipRegistered = await ipAddressService(ipAddress);
 
         if(ipRegistered.success) {
-            return res.status(201).send({ message: ipRegistered.message });
+            return res.status(201).send({ message: ipRegistered.newIp });
+        } else {
+            return res.status(409).send({ message: ipRegistered.message });
         }
 
     } catch (error) {
-        return res.status(409).send({ message: "The error is here, but I do not know why" });
+        return res.status(500).send({ error: "Unknown result from service" });
     }
 }
 
