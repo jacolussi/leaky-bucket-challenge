@@ -1,6 +1,6 @@
 import ipAddressService from '../services/ipAddressService.js';
 
-const registerIP = async (req, res) => {
+export const registerIP = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
     try {
@@ -16,5 +16,3 @@ const registerIP = async (req, res) => {
         return res.status(500).send({ error: "Unknown result from service" });
     }
 }
-
-export default registerIP;

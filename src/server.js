@@ -1,36 +1,11 @@
 import express from "express";
-import mongoose, { mongo, Schema } from "mongoose";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
+import ipAddressRouter from "./routes/ipAddressRoute.js";
+import userRouter from "./routes/userRoute.js";
 dotenv.config()
 
-const ipSchema = new Schema({
-    ipAddress: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    token: {
-        type: Number,
-        default: 10,
-        min: 0
-    }
-});
-
-const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    }
-});
-
 const mongoURI = process.env.MONGODB_URI;
-
-const IP = mongoose.model('ip', ipSchema);
-const User = mongoose.model('user', userSchema);
 
 const connectDB = async () => {
     try {
@@ -46,82 +21,9 @@ connectDB()
 const server = express();
 server.use(express.json());
 
+server.use("/", ipAddressRouter);
+server.use("/users", userRouter);
+
 server.listen(3333, () => {
     console.log("Server running on 3333 port")
-});
-
-server.get("/", async (req, res) => {
-    const ipAddress = req.headers['x-forwarded-for'] ||req.socket.remoteAddress;
-
-    try {
-        const ipExists = await IP.findOne({
-            ipAddress: ipAddress
-         })
-
-         if(ipExists) {
-            return res.status(409).send({
-                message: 'IP already registered.'
-            });
-         }
-
-         const newIp = new IP({
-            ipAddress: ipAddress
-         });
-
-         await newIp.save();
-    } catch (error) {
-        return res.status(500).send({
-            message: 'Error registering IP adress',
-            error: error
-        });
-    }
-});
-
-server.post("/users", async (req, res) => {
-    const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-
-    try {
-        const ipExists = await IP.findOne({
-            ipAddress: ipAddress
-        });
-
-        if(ipExists.token === 0) {
-            return res.status(403).send({
-                message: "You do not have enough tokens."
-            });
-        }
-
-        if(!ipExists){
-            return res.status(403).send({
-                message: "IP not registered"
-            });
-        }
-
-        const { name, email } = req.body;
-
-        if(name === "" || email === "") {
-            await ipExists.updateOne({
-                token: ipExists.token -1
-            });
-
-            return res.status(401).send({
-                message: "You must provide corretly de fields to create an user"
-            });
-        }
-
-        const newUser = await User.create({
-            name: name,
-            email: email
-        });
-
-
-        return res.status(201).send({
-            message: `User successfully created`,
-            user: newUser
-        });
-    } catch (error) {
-        return res.status(500).send({
-            message: "FUCKKKK"
-        });
-    }
 });

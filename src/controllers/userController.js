@@ -1,7 +1,7 @@
 import { createUserOnDb } from "../services/userService.js";
 import { ipAddressModel } from "../models/ipAddressModel.js";
 
-const registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
     try {
@@ -52,5 +52,3 @@ const registerUser = async (req, res) => {
         });
     }
 }
-
-export default registerUser;

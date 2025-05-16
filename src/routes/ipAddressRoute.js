@@ -1,5 +1,5 @@
 import express from "express";
-import registerIP from "../controllers/ipAddressController.js";
+import { registerIP } from "../controllers/ipAddressController.js";
 
 const ipAddressRouter = express.Router();
 
