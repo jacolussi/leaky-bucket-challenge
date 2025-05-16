@@ -9,7 +9,7 @@ const mongoURI = process.env.MONGODB_URI;
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(mongoURI)
+        await mongoose.connect(mongoURI, { bufferCommands: false })
         console.log("Database connected")
     } catch (error) {
         console.error("Error connecting to the database", error)
@@ -17,13 +17,21 @@ const connectDB = async () => {
     }
 }
 
-connectDB()
-const server = express();
-server.use(express.json());
+const startServer = async () => {
+    await connectDB();
+    const server = express();
+    server.use(express.json());
 
-server.use("/", ipAddressRouter);
-server.use("/users", userRouter);
+    server.get("/", (req, res) => {
+        return res.status(200).send("API CONNECTED");
+    })
 
-server.listen(3333, () => {
+    server.use("/ip", ipAddressRouter);
+    server.use("/users", userRouter);
+
+    server.listen(3333, () => {
     console.log("Server running on 3333 port")
-});
+    });
+}
+
+startServer();

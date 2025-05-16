@@ -15,10 +15,10 @@ const ipSchema = new Schema({
 
 export const ipAddressModel = mongoose.model('ip', ipSchema)
 
-const isIpRegistered = async (ip) => {
+const isIpRegistered = async (ip, session) => {
     const userIpAddress = await ipAddressModel.findOne({
         ipAddress: ip
-    });
+    }, [session]);
 
     if(userIpAddress !== null) {
         return true;
@@ -27,13 +27,13 @@ const isIpRegistered = async (ip) => {
     return false;
 }
 
-export const registerUserIpOnDatabase = async (userIpAddress) => {
-    const isUserRegistered = await isIpRegistered(userIpAddress);
+export const registerUserIpOnDatabase = async (userIpAddress, session) => {
+    const isUserRegistered = await isIpRegistered(userIpAddress, session);
 
     if(isUserRegistered === false) {
         const newIp = new ipAddressModel({
             ipAddress: userIpAddress
-        });
+        }, [session]);
 
         await newIp.save();
 
