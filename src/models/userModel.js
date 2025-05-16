@@ -14,10 +14,10 @@ const userSchema = new Schema({
 
 const User = mongoose.model('user', userSchema);
 
-const userExists = async (email) => {
+const userExists = async (email, session) => {
     const user = await User.findOne({
         email: email
-    });
+    }, [session]);
 
     if(user !== null) {
         return true;
@@ -26,8 +26,8 @@ const userExists = async (email) => {
     return false;
 }
 
-export const createUser = async (name, email) => {
-    const user = await userExists(email);
+export const createUser = async (name, email, session) => {
+    const user = await userExists(email, session);
 
     if(!user) {
         const newUser = new User({
@@ -35,7 +35,7 @@ export const createUser = async (name, email) => {
             email: email
         });
 
-        await newUser.save();
+        await newUser.save({ session });
 
         return { success: true, message: newUser }
     }

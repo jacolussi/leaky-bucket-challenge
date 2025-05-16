@@ -33,9 +33,9 @@ export const registerUserIpOnDatabase = async (userIpAddress, session) => {
     if(isUserRegistered === false) {
         const newIp = new ipAddressModel({
             ipAddress: userIpAddress
-        }, [session]);
+        });
 
-        await newIp.save();
+        await newIp.save({ session });
 
         return { success: true, newIp: newIp }
     }

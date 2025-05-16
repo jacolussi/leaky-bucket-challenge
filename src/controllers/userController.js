@@ -1,13 +1,17 @@
 import { createUserOnDb } from "../services/userService.js";
 import { ipAddressModel } from "../models/ipAddressModel.js";
+import mongoose from "mongoose";
 
 export const registerUser = async (req, res) => {
     const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const session = await mongoose.startSession();
 
     try {
+        session.startTransaction();
+
         const ipExists = await ipAddressModel.findOne({
             ipAddress: ipAddress
-        });
+        }, [session]);
 
         if(ipExists === null){
             return res.status(403).send({
@@ -25,15 +29,15 @@ export const registerUser = async (req, res) => {
 
         if(!name || !email) {
             await ipExists.updateOne({
-                token: ipExists.token -1
-            });
+                $inc: { token: -1 }
+            }, [session]);
 
             return res.status(401).send({
                 message: "You must provide the fields to create an user"
             });
         }
 
-        const newUser = await createUserOnDb(name, email)
+        const newUser = await createUserOnDb(name, email, session)
 
         if(newUser.success) {
             return res.status(201).send({
