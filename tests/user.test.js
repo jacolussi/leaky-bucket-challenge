@@ -2,13 +2,11 @@ import mongoose from "mongoose";
 import request from "supertest";
 import { ipAddressModel } from "../src/models/ipAddressModel";
 import dotEnv from "dotenv";
-import { startServer } from "../src/server.js";
+import server from "../src/server.js";
 dotEnv.config();
-let server;
+
 describe('Atomicity test - Invalid payloads should decrement tokens', () => {
     beforeAll(async () => {
-        server = startServer();
-
         await mongoose.connect(process.env.MONGODB_URI, { bufferCommands: false });
         await mongoose.connection.asPromise();
         await ipAddressModel.deleteMany({});
@@ -28,10 +26,10 @@ describe('Atomicity test - Invalid payloads should decrement tokens', () => {
 
         for(let i = 0; i < 20; i++) {
             concurrentRequests.push(
-                request(httpServer)
+                request(server)
                 .post("/users")
                 .set('x-forwarded-for', '127.0.0.1')
-                .send({ name: '', email: '' })
+                .send({})
             )
         }
 
